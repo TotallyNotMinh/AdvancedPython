@@ -1,92 +1,116 @@
+import math
+import numpy as np
+
 class Student:
     def __init__(self, name, Id, dob):
         self.__name = name
         self.__Id = Id
         self.__dob = dob
 
+    def getName(self):
+        return self.__name
+
+    def getId(self):
+        return self.__Id
+
+    def getDob(self):
+        return self.__dob
+
+
 class Class:
     def __init__(self):
         self.__studentList = []
 
     def addStudent(self, count):
-        for i in range(0, count):
+        for i in range(count):
             name = input("Enter student name: ")
             Id = input("Enter student Id: ")
             dob = input("Enter student DoB: ")
             self.__studentList.append(Student(name, Id, dob))
 
-class StudentMark:
-    def __init__(self, name, mark):
-        self.__name = name
-        self.__mark = mark
-    
-    def __str__(self):
-        return f"Name: {self.__name}, mark: {self.__mark}" 
+    def getStudents(self):
+        return self.__studentList
 
-    def getName(self):
-        return self.__name
+
+class StudentMark:
+    def __init__(self, student, mark):
+        self.__student = student      
+        self.__mark = mark
+
+    def __str__(self):
+        return f"Name: {self.__student.getName()}, Mark: {self.__mark}"
+
+    def getStudent(self):
+        return self.__student
 
     def getMark(self):
         return self.__mark
 
+
 class Course:
-    def __init__(self, name, Id, sCount):
+    def __init__(self, name, Id, credit, studentList):
         self.__name = name
         self.__Id = Id
-        self.__sCount = sCount
+        self.__credit = credit
         self.__marks = []
+        self.__students = studentList   
 
     def setMarks(self):
-        for i in range(0, self.__sCount):
-            name = input("Enter student name: ")
-            mark = input("Enter student mark: ")
-            self.__marks.append(StudentMark(name, mark))
+        print(f"-- Inputting marks for course: {self.__name} --")
+        for student in self.__students:
+            mark = math.floor(float(input(f"Enter mark for student {student.getName()}: ")))
+            self.__marks.append(StudentMark(student, mark))
 
     def getName(self):
         return self.__name
 
     def getMarks(self):
-        for mark in self.__marks:
-            return mark
+        return self.__marks
 
 
 class CourseList:
     def __init__(self):
         self.__cList = []
 
-    def addCourses(self, count):
-        for i in range(0, count):
+    def addCourses(self, count, studentList):
+        for i in range(count):
             name = input("Enter course name: ")
             Id = input("Enter course Id: ")
-            sCount = int(input("Enter student count: "))
-            course = Course(name, Id, sCount)
+            credit = int(input("Enter course credit: "))
+
+            course = Course(name, Id, credit, studentList)
             course.setMarks()
+
             self.__cList.append(course)
-            
 
     def getMarks(self, cName):
         for course in self.__cList:
-            if (cName == course.getName()):
+            if cName == course.getName():
                 return course.getMarks()
+        return None
 
-
-if __name__ == "__main__":
+def main():
     print("-- Initializing class --")
     myClass = Class()
 
-    sCount = int(input("Enter number of student of class: "))
-    print(f"-- Adding {sCount} students to class --")
+    sCount = int(input("Enter number of students in class: "))
     myClass.addStudent(sCount)
 
-    print("-- Initializing courses")
+    print("-- Initializing courses --")
     courses = CourseList()
 
     n = int(input("Enter number of courses: "))
-    print(f"-- Adding {n} courses")
-    courses.addCourses(n)
+    courses.addCourses(n, myClass.getStudents())
 
     checkCourse = input("Enter course name to get marks: ")
-    print(courses.getMarks(checkCourse))
+    marks = courses.getMarks(checkCourse)
 
+    if marks is None:
+        print("Course not found!")
+    else:
+        print(f"-- Marks for {checkCourse} --")
+        for m in marks:
+            print(m)
 
-    
+main()
+
